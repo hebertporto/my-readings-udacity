@@ -1,0 +1,30 @@
+{
+  "name": "my-readings-udacity",
+  "version": "1.0.0",
+  "description": "Projeto 1 - Nanodegree Udacity",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hebertporto/my-readings-udacity.git"
+  },
+  "author": "Hebert Porto <hebertporto@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hebertporto/my-readings-udacity/issues"
+  },
+  "homepage": "https://github.com/hebertporto/my-readings-udacity#readme",
+  "dependencies": {
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4"
+  },
+  "devDependencies": {
+    "react-scripts": "0.9.5"
+  }
+}
