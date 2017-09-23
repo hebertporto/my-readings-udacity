@@ -1,5 +1,5 @@
 import React from 'react'
-import Book from './components/Book'
+import Book from './../components/Book'
 // import * as BooksAPI from './BooksAPI'
 import './App.css'
 const CurrBooks = [
