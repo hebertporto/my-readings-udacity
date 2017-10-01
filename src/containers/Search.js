@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PureComponent  } from 'react'
 import { Link } from 'react-router-dom'
 import Loader from 'halogen/ClipLoader'
 
@@ -8,28 +8,20 @@ import Book from './../components/Book'
 import If from './../components/If'
 
 
-class Search extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      booksInShelf: [],
-      books: [],
-      booksFiltered: [],
-      value: '',
-      loading: true,
-    }
-    this.getAllBooks = this.getAllBooks.bind(this)
-    this.handleChange = this.handleChange.bind(this)
-    this.setBooksList = this.setBooksList.bind(this)
-    this.keyPress = this.keyPress.bind(this)
-    this.updateBookShelf = this.updateBookShelf.bind(this)
+class Search extends PureComponent {
+  state = {
+    booksInShelf: [],
+    books: [],
+    booksFiltered: [],
+    value: '',
+    loading: true,
   }
 
   componentDidMount() {
     this.getAllBooks()
   }
 
-  getAllBooks() {
+  getAllBooks = () => {
     api.getAll().then(books => {
       this.setBooksList(books)
       this.setState({
@@ -38,7 +30,7 @@ class Search extends React.Component {
     })
   }
 
-  setBooksList(books) {
+  setBooksList = (books) => {
     this.setState({
       books: books,
       booksFiltered: books,
@@ -46,25 +38,24 @@ class Search extends React.Component {
     })
   }
 
-  handleChange(event) {
+  handleChange = (event) =>  {
     let updatedList = this.state.books
-    updatedList = updatedList.filter((book) => {
-      return book.title.toLowerCase().search(
-        event.target.value.toLowerCase()) !== -1
-    })
+    updatedList = updatedList.filter(book => (
+      book.title.toLowerCase().search(
+       event.target.value.toLowerCase()
+      ) !== -1
+   ))
     this.setState({ booksFiltered: updatedList })
   }
 
-  keyPress(event) {
+  keyPress = (event) => {
     const { booksInShelf } = this.state
     if(event.keyCode === 13){
       api.search(event.target.value, '10')
         .then(searchResult => {
           if(Array.isArray(searchResult)) {
             const result = searchResult.map((book) => {
-              const newBook = booksInShelf.find((b) => {
-                return b.id === book.id
-              })
+              const newBook = booksInShelf.find(b => b.id !== book.id)
               return newBook ? newBook : book
             })
             this.setBooksList(result)
@@ -73,7 +64,7 @@ class Search extends React.Component {
     }
   }
 
-  updateBookShelf(book, shelf) {
+  updateBookShelf = (book, shelf) => {
     api.update(book, shelf)
       .then(res => {
         this.setState({
@@ -99,7 +90,12 @@ class Search extends React.Component {
           <div className="search-books-bar">
             <Link className="close-search" to="/">Close</Link>
             <div className="search-books-input-wrapper">
-              <input type="text" placeholder="Search by title or author" onChange={this.handleChange} onKeyDown={this.keyPress} />
+              <input
+                type="text"
+                placeholder="Search by title or author"
+                onChange={this.handleChange}
+                onKeyDown={this.keyPress}
+              />
             </div>
           </div>
           <div className="search-books-results">

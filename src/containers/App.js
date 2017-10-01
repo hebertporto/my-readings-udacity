@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import _ from 'lodash'
 import Loader from 'halogen/ClipLoader'
@@ -10,7 +10,7 @@ import If from './../components/If'
 
 import './App.css'
 
-class BooksApp extends React.Component {
+class BooksApp extends Component {
   state = {
     showSearchPage: false,
     loading: true,
@@ -18,38 +18,27 @@ class BooksApp extends React.Component {
     wantToReadBooks: [],
     readBooks: [],
   }
-  constructor(props) {
-    super(props)
-    this.getAllBooks = this.getAllBooks.bind(this)
-    this.filterBooksByShelf = this.filterBooksByShelf.bind(this)
-    this.updateBookShelf = this.updateBookShelf.bind(this)
-  }
 
   componentDidMount() {
     this.getAllBooks()
   }
 
-  getAllBooks() {
-    api.getAll().then(books => {
-      this.filterBooksByShelf(books)
-    })
+  getAllBooks = () => {
+    api.getAll().then(books => this.filterBooksByShelf(books))
   }
 
-  filterBooksByShelf(books) {
-    const groupedBooks = _.groupBy(books, 'shelf')
+  filterBooksByShelf = (books) => {
+    const { read, wantToRead, currentlyReading } = _.groupBy(books, 'shelf')
     this.setState({
-      readBooks: groupedBooks['read'],
-      currentlyBooks: groupedBooks['currentlyReading'],
-      wantToReadBooks: groupedBooks['wantToRead'],
+      readBooks: read ? read : false,
+      currentlyBooks: currentlyReading ? currentlyReading : false,
+      wantToReadBooks: wantToRead ? wantToRead : false,
       loading: false,
     })
   }
 
-  updateBookShelf(book, shelf) {
-    api.update(book, shelf)
-      .then(res => {
-        this.getAllBooks()
-      })
+  updateBookShelf = (book, shelf) => {
+    api.update(book,shelf).then(this.getAllBooks)
   }
 
   renderSpinner() {

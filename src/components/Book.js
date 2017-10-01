@@ -1,27 +1,29 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 
-class Book extends Component {
+const styles = {
+  cover: {
+    width: 128,
+    height: 193,
+  }
+}
+
+class Book extends PureComponent {
   state = {
     value: 'moveTo',
   }
 
-  constructor(props) {
-    super(props)
-    this.changeSelect = this.changeSelect.bind(this)
-  }
-  changeSelect(event, book) {
-    console.log('muda select', event.target.value)
+  changeSelect = (event, book) => {
     this.props.updateBookd(book, event.target.value)
     this.setState({value: event.target.value});
   }
-  setSelectValue(value) {
-    this.setState({
-      value
-    })
-  }
+
+  setValue = value => this.setState({ value })
 
   render() {
     const { books } = this.props
+
+    if(!books) return <span>No books here!</span>
+
     return (
       <ol className="books-grid">
         {books.map((book, index) => {
@@ -32,11 +34,15 @@ class Book extends Component {
                 <div
                   className="book-cover"
                   style={{
-                    width: 128,
-                    height: 193,
-                    backgroundImage: `url("${book.imageLinks.smallThumbnail}")` }}></div>
+                    ...styles.cover,
+                    backgroundImage: `url("${book.imageLinks.smallThumbnail}")` }}
+                >
+                </div>
                 <div className="book-shelf-changer">
-                  <select  onChange={(e) => this.changeSelect(e, book)} value={book.shelf ? book.shelf : this.state.value}>
+                  <select
+                    onChange={(e) => this.changeSelect(e, book)}
+                    value={book.shelf ? book.shelf : this.state.value}
+                  >
                     <option value="moveTo" disabled>Move to...</option>
                     <option value="currentlyReading">Currently Reading</option>
                     <option value="wantToRead">Want to Read</option>
