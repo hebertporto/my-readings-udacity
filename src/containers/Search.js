@@ -76,6 +76,11 @@ class Search extends React.Component {
   updateBookShelf(book, shelf) {
     api.update(book, shelf)
       .then(res => {
+        this.setState({
+          booksFiltered: [],
+          loading: true,
+        })
+        this.getAllBooks()
       })
   }
 
