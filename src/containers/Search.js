@@ -1,7 +1,7 @@
 import React, { PureComponent  } from 'react'
 import { Link } from 'react-router-dom'
 import Loader from 'halogen/ClipLoader'
-
+import _ from 'lodash'
 import * as api from './../BooksAPI'
 
 import Book from './../components/Book'
@@ -23,9 +23,9 @@ class Search extends PureComponent {
 
   getAllBooks = () => {
     api.getAll().then(books => {
-      this.setBooksList(books)
       this.setState({
         booksInShelf: books,
+        loading: false,
       })
     })
   }
@@ -38,31 +38,24 @@ class Search extends PureComponent {
     })
   }
 
-  handleChange = (event) =>  {
-    let updatedList = this.state.books
-    updatedList = updatedList.filter(book => (
-      book.title.toLowerCase().search(
-       event.target.value.toLowerCase()
-      ) !== -1
-   ))
-    this.setState({ booksFiltered: updatedList })
+  handleChange = (value) => {
+    this.setState({ value })
+    this.searchApi(value)
   }
 
-  keyPress = (event) => {
-    const { booksInShelf } = this.state
-    if(event.keyCode === 13){
-      api.search(event.target.value, '10')
-        .then(searchResult => {
-          if(Array.isArray(searchResult)) {
-            const result = searchResult.map((book) => {
-              const newBook = booksInShelf.find(b => b.id !== book.id)
-              return newBook ? newBook : book
-            })
-            this.setBooksList(result)
-          }
+  searchApi = _.debounce((value) => {
+    this.setState({ loading: true })
+    api.search(value, '10')
+    .then(searchResult => {
+      if(Array.isArray(searchResult)) {
+        const result = searchResult.map((book) => {
+          const newBook = this.state.booksInShelf.find(b => b.id === book.id)
+          return newBook ? newBook : book
         })
-    }
-  }
+        this.setBooksList(result)
+      }
+    })
+  }, 1500)
 
   updateBookShelf = (book, shelf) => {
     api.update(book, shelf)
@@ -70,6 +63,7 @@ class Search extends PureComponent {
         this.setState({
           booksFiltered: [],
           loading: true,
+          value: '',
         })
         this.getAllBooks()
       })
@@ -83,7 +77,7 @@ class Search extends PureComponent {
     )
   }
   render() {
-    const { booksFiltered, loading } = this.state
+    const { booksFiltered, loading, value } = this.state
     return (
       <div className="app">
         <div className="search-books">
@@ -93,8 +87,8 @@ class Search extends PureComponent {
               <input
                 type="text"
                 placeholder="Search by title or author"
-                onChange={this.handleChange}
-                onKeyDown={this.keyPress}
+                onChange={(e) => this.handleChange(e.target.value)}
+                value={value}
               />
             </div>
           </div>
